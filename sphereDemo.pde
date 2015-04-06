@@ -11,7 +11,7 @@ String[] values={"0","0"};
 
 void setup(){
   size(1000, 1000, OPENGL);
-  server=new Server(this, 9099);
+  server=new Server(this, 4444);
 }
 
 void draw(){
@@ -29,11 +29,12 @@ void draw(){
   try{
   if (incoming!=null){
     data=incoming.readString();
-    values=split(data,",");
-    rotX=float(values[0]);
+    values=split(data,";");
+    values=split(values[0],",");
+    rotX=(int(values[0])-64)*2;
     Float temp=float(values[1]);
     if (!temp.isNaN()){
-      rotY=float(values[1]);
+      rotY=(int(values[1])-64)*4;
       }
     } 
   } catch (NullPointerException e){
