@@ -1,6 +1,8 @@
+import hypermedia.net.*;
 import processing.net.*;
 import processing.opengl.*;
 
+UDP udp;
 Server server;
 float rotX=0;
 float rotY=0;
@@ -12,6 +14,10 @@ String[] values={"0","0"};
 void setup(){
   size(1000, 1000, OPENGL);
   server=new Server(this, 4444);
+  udp=new UDP(this,4445);
+  udp.log(true);
+  udp.listen(true);
+  
 }
 
 void draw(){
@@ -37,6 +43,28 @@ void draw(){
       rotY=(int(values[1])-64)*4;
       }
     } 
+  } catch (NullPointerException e){
+    return;
+  }catch (ArrayIndexOutOfBoundsException e){
+    return;
+  }
+  
+}
+
+void receive(byte[] data){
+  try{
+    //String convert=new String(data);  
+    int x=int(data[0]);
+    int y=int(data[1]);
+    println(x+","+y);
+    //values=split(convert,";");
+    //values=split(values[0],",");
+    rotX=(x-125)*2;
+    Float temp=float(values[1]);
+    if (!temp.isNaN()){
+      rotY=(-y+125)*2;
+      }
+
   } catch (NullPointerException e){
     return;
   }catch (ArrayIndexOutOfBoundsException e){
