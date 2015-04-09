@@ -10,6 +10,9 @@ float speed=0;
 String data="";
 String display="0,0";
 String[] values={"0","0"};
+float SPRING_CONSTANT=1;
+long xlastmillis=0;
+long ylastmillis=0;
 
 void setup(){
   size(1000, 1000, OPENGL);
@@ -59,10 +62,12 @@ void receive(byte[] data){
     println(x+","+y);
     //values=split(convert,";");
     //values=split(values[0],",");
-    rotX=(x-125)*2;
+    rotX=0; //acceleration(rotX,(max(min(((x-125)*2),255),-255)),rotX,millis()-xlastmillis);
+    xlastmillis=millis();
     Float temp=float(values[1]);
     if (!temp.isNaN()){
-      rotY=(-y+125)*2;
+      rotY=max(min(int(acceleration(((-y+125)*2),rotY,rotY,millis()-ylastmillis)),255),-255);
+      ylastmillis=millis();
       }
 
   } catch (NullPointerException e){
@@ -71,3 +76,17 @@ void receive(byte[] data){
     return;
   }
 }
+
+
+int acceleration(float target, float current, float velocity, float timestep){
+  timestep=timestep/10000;
+  float currentToTarget = target-current;
+  float springForce = currentToTarget * SPRING_CONSTANT;
+  float dampingForce = -velocity * 2 * sqrt(SPRING_CONSTANT);
+  float force = springForce+dampingForce;
+  velocity+=force*timestep;
+  float displacement = velocity*timestep;
+  return int(current+displacement);
+}
+
+
